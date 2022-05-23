@@ -1,6 +1,12 @@
-#Load Data from google drive
-id <- "1cvuW_XxKKBogHrF2bXE8SlUfB1vcvMHy" # google file ID
-Study3Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
+# Load helper functions
+source('scripts/behavioral_analyses/helper_functions.R')
+
+# Import and load libraries
+packages = c("tidyverse","sjstats","ggplot2","lme4","lmerTest","Hmisc","car","lmtest","ROCR","brms", "tidybayes", "bayestestR")
+ipak(packages)
+
+#Load Data
+Study3Data <- read.csv("data/Study3Data.csv", header=T, stringsAsFactors = FALSE, na.strings=c("","NA"))
 Study3Data$Participant <- as.character(Study3Data$Participant) #make participant factor
 
 #code categorical variables

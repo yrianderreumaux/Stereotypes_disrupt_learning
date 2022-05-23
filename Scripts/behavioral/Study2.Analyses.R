@@ -1,6 +1,14 @@
-#Load Data from google drive
-id <- "1hVhWUzRQ--hhPxDhj9rIsvo5-R2wpVHk" # google file ID
-Study2Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
+# Load helper functions
+setwd("/Volumes/GoogleDrive/My Drive/Research Projects/WPT /Stereotypes_Disrupt_Learning_Manuscript_R&R_0410_2022/Data_and_analyses")
+source('scripts/behavioral_analyses/helper_functions.R')
+
+# Import and load libraries
+packages = c("tidyverse","sjstats","ggplot2","lme4","lmerTest","Hmisc","car","lmtest","ROCR","brms", "tidybayes", "emmeans")
+ipak(packages)
+
+
+#Load Data
+Study2Data <- read.csv("data/Study2Data.csv", header=T, stringsAsFactors = FALSE, na.strings=c("","NA"))
 Study2Data$Participant <- factor(Study2Data$Participant) #make participant factor
 
 #create variable for face/cloud and prediction type crime/weather
