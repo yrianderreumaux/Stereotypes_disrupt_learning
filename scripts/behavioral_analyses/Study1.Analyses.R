@@ -1,13 +1,6 @@
-# Load helper functions
-setwd("/Users/yrianderreumaux/My Drive/Research Projects/WPT /Stereotypes_Disrupt_Learning_Manuscript_R&R_0410_2022/Data_and_analyses")
-source('scripts/behavioral_analyses/helper_functions.R')
-
-# Import and load libraries
-packages = c("tidyverse","sjstats","ggplot2","lme4","lmerTest","Hmisc","car","lmtest","ROCR","brms", "tidybayes")
-ipak(packages)
-
-#Load Data
-Study1Data <- read.csv("data/study1Data.csv", header=T, stringsAsFactors = FALSE, na.strings=c("","NA")) #load data
+#Load Data from google drive
+id <- "17W8lGp9yJeSCv8bxRLSuy1hlLXQtPv_n" # google file ID
+Study1Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
 Study1Data$Participant <- as.character(Study1Data$Participant) #make participant factor
 
 ##Dummy code condition for accuracy mixed model
