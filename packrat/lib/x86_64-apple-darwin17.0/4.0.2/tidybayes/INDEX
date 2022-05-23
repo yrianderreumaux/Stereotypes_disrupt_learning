@@ -1,0 +1,50 @@
+add_draws               Add draws to a data frame in tidy format
+add_epred_draws         Add draws from the posterior fit, predictions,
+                        or residuals of a model to a data frame
+add_epred_rvars         Add 'rvar's for the linear predictor, posterior
+                        expectation, posterior predictive, or residuals
+                        of a model to a data frame
+combine_chains          Combine the chain and iteration columns of tidy
+                        data frames of draws
+compare_levels          Compare the value of draws of some variable
+                        from a Bayesian model for different levels of a
+                        factor
+compose_data            Compose data for input into a Bayesian model
+data_list               Data lists for input into Bayesian models
+density_bins            Density bins and histogram bins as data frames
+emmeans_comparison      Use emmeans contrast methods with
+                        compare_levels
+gather_draws            Extract draws of variables in a Bayesian model
+                        fit into a tidy data format
+gather_emmeans_draws    Extract a tidy data frame of draws of posterior
+                        distributions of "estimated marginal means"
+                        (emmeans/lsmeans) from a Bayesian model fit.
+gather_pairs            Gather pairwise combinations of values from
+                        key/value columns in a long-format data frame
+gather_rvars            Extract draws from a Bayesian model into tidy
+                        data frames of random variables
+gather_variables        Gather variables from a tidy data frame of
+                        draws from variables into a single column
+get_variables           Get the names of the variables in a fitted
+                        Bayesian model
+n_prefix                Prefix function generator for composing
+                        dimension index columns
+nest_rvars              Nest and unnest 'rvar' columns in data frames
+predict_curve           Deprecated: Prediction curves for arbitrary
+                        functions of posteriors
+recover_types           Decorate a model fit or sample with data types
+                        recovered from the input data
+sample_draws            Sample draws from a tidy-format data frame of
+                        draws
+summarise_draws.grouped_df
+                        Summaries of draws in 'grouped_df' objects
+tidy_draws              Get a sample of posterior draws from a model as
+                        a tibble
+tidybayes-deprecated    Deprecated functions, arguments, and column
+                        names in tidybayes
+tidybayes-models        Models supported by tidybayes
+tidybayes-package       Tidy Data and 'Geoms' for Bayesian Models
+ungather_draws          Turn tidy data frames of variables from a
+                        Bayesian model back into untidy data
+x_at_y                  Generate lookup vectors for composing nested
+                        indices

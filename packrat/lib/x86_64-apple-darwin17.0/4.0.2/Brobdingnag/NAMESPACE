@@ -1,0 +1,9 @@
+exportPattern("^[^\\.]")
+import("methods")
+
+importFrom("graphics", "plot.default")
+
+S3method("print","brob")
+S3method("print","glub")
+S3method("print","brobmat")
+

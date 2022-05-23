@@ -1,0 +1,50 @@
+bin_dots                Bin data values using a dotplot algorithm
+curve_interval          Curvewise point and interval summaries for tidy
+                        data frames of draws from distributions
+cut_cdf_qi              Categorize values from a CDF into quantile
+                        intervals
+find_dotplot_binwidth   Dynamically select a good bin width for a
+                        dotplot
+geom_dotsinterval       Automatic dotplots, dots + intervals, and
+                        quantile dotplots (ggplot geom)
+geom_interval           Multiple-interval plot (shortcut geom)
+geom_lineribbon         Line + multiple-ribbon plots (ggplot geom)
+geom_pointinterval      Point + multiple-interval plot (shortcut geom)
+geom_slab               Slab (ridge) plot (shortcut geom)
+geom_slabinterval       Slab + point + interval meta-geom
+ggdist-deprecated       Deprecated functions and arguments in ggdist
+ggdist-package          Visualizations of Distributions and Uncertainty
+lkjcorr_marginal        Marginal distribution of a single correlation
+                        from an LKJ distribution
+marginalize_lkjcorr     Turn spec for LKJ distribution into spec for
+                        marginal LKJ distribution
+parse_dist              Parse distribution specifications into columns
+                        of a data frame
+point_interval          Point and interval summaries for tidy data
+                        frames of draws from distributions
+position_dodgejust      Dodge overlapping objects side-to-side,
+                        preserving justification
+scale_colour_ramp       Secondary ggplot color scale that ramps from
+                        another color
+scales                  Custom ggplot scales for geom_slabinterval (and
+                        derivatives)
+stat_ccdfinterval       CCDF bar plot (shortcut stat)
+stat_cdfinterval        CDF bar plot (shortcut stat)
+stat_eye                Eye (violin + interval) plot (shortcut stat)
+stat_gradientinterval   Gradient + interval plot (shortcut stat)
+stat_halfeye            Half-eye (density + interval) plot (shortcut
+                        stat)
+stat_histinterval       Histogram + interval plot (shortcut stat)
+stat_interval           Multiple-interval plot (shortcut stat)
+stat_lineribbon         Line + multiple-ribbon plot (shortcut stat)
+stat_pointinterval      Point + multiple-interval plot (shortcut stat)
+stat_ribbon             Multiple-ribbon plot (shortcut stat)
+stat_slab               Slab (ridge) plot (shortcut stat)
+stat_slabinterval       Slab + interval plots for sample data and
+                        analytical distributions (ggplot stat)
+student_t               Scaled and shifted Student's t distribution
+theme_ggdist            Simple, light ggplot2 theme for ggdist and
+                        tidybayes
+tidy-format-translators
+                        Translate between different tidy data frame
+                        formats for draws from distributions
