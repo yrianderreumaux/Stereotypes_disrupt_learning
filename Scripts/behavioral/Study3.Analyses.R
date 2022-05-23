@@ -1,7 +1,7 @@
 #Load data from google drive
 id <- "1cvuW_XxKKBogHrF2bXE8SlUfB1vcvMHy" # google file ID
 Study3Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
-Study3Data$Participant <- as.character(Study3Data$Participant) #make participant factor
+Study3Data$Participant <- as.factor(Study3Data$Participant) #make participant factor
 
 #code categorical variables
 #####

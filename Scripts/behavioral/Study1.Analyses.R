@@ -1,7 +1,7 @@
 #Load data from google drive
 id <- "17W8lGp9yJeSCv8bxRLSuy1hlLXQtPv_n" # google file ID
 Study1Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
-Study1Data$Participant <- as.character(Study1Data$Participant) #make participant factor
+Study1Data$Participant <- as.factor(Study1Data$Participant) #make participant factor
 
 ##Dummy code condition for accuracy mixed model
 #####

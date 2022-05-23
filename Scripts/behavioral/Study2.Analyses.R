@@ -1,8 +1,10 @@
 #Load data from google drive
 id <- "1hVhWUzRQ--hhPxDhj9rIsvo5-R2wpVHk" # google file ID
 Study2Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
-Study2Data$Participant <- factor(Study2Data$Participant) #make participant factor
-
+Study2Data$Participant <- as.factor(Study2Data$Participant) #make participant factor
+packrat::on()
+packrat::init()
+packrat::snapshot()
 #create variable for face/cloud and prediction type crime/weather
 Study2Data$stim_type <- NA
 Study2Data$pred_type <- NA
@@ -34,7 +36,7 @@ contrasts(Study2Data$ethnicity_eff) <- contr.treatment(6)
 
 #run mixed models for learning by condition
 ######
-Study2.model<- glmer(acc~scale(Trial)+Condition_dum+ (scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
+Study2.model<- glmer(acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
 #save(Study2.model, file = "study2model.rda") #function to save model to reload later for simulations
 Study2.coef <- summary(Study2.model) #removing random effect for stimuli removes convergence issue, but does not change estimates and therefore we are keeping it. 
 Study2.effects <- exp(fixef(Study2.model))
@@ -44,7 +46,15 @@ Study2.race.model<- glmer(acc~scale(Trial)+Condition_dum* ethnicity_eff+(scale(T
 Study2.race.coef <- summary(Study2.race.model) #no effect of race
 #Post-hoc simple contrasts
 study2.contr <- emmeans(Study2.model, "Condition_dum")
-study2.contr.coef <- pairs(study2.contr, adjust = "none")
+study2.contr.coef <- pairs(study2.contr, adjust = "none", type = "response")
+#compare effect sizes
+#steal compared to steal clouds  0.229% more likely to be incorrect
+#steal compared to weather_faces  0.186% more likely to be incorrect
+#steal compared to weather_faces  0.303% more likely to be incorrect
+
+#apa table
+modelsummary::msummary(list(
+  "Null Model" = Study2.model), stars = T)
 #####
 
 #demonstrating that there are no differences in learning on the first 5 trials
