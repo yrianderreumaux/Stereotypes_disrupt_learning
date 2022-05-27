@@ -115,6 +115,10 @@ MetaM4_coef <- summary(MetaM4)
 MetaM5<- glmer(congruency~scale(Trial)*scale(IMS)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 MetaM5_coef <- summary(MetaM5) 
 
+#does IMS moderate whether people are more likely to respond in a stereotype congruent manner?
+Test2<- glmer(congruency~scale(Trial)+scale(IMS)*scale(EMS)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
+Test2_coef <- summary(Test2) 
+
 #does IMS moderate whether people are more likely to respond in a stereotype congruent manner differently over time?
 MetaM6<- glmer(congruency~scale(Trial)*log(RT)*scale(IMS)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 MetaM6_coef <- summary(MetaM6) 
