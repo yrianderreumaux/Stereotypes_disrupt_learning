@@ -79,6 +79,11 @@ TouchdownDF$congruency[TouchdownDF$Stimuli == "black" & TouchdownDF$Choice == "t
 TouchdownDF$congruency[TouchdownDF$Stimuli == "white" & TouchdownDF$Choice == "touchdown"] <- 0
 TouchdownDF$congruency[TouchdownDF$Stimuli == "black" & TouchdownDF$Choice == "no_touchdown"] <- 0
 TouchdownDF$congruency <- as.factor(TouchdownDF$congruency)
+
+#recode race based on reviewer comment
+
+TouchdownDF$ethnicity_cat[TouchdownDF$Stimuli == "white" & TouchdownDF$Choice == "no_touchdown"] <- 1
+
 #####
 
 #effects code card probabilities
@@ -108,7 +113,7 @@ MetaM3<- glmer(acc~scale(Trial)*as.factor(congruency)+ as.factor(study)+(scale(T
 MetaM3_coef <- summary(MetaM3) 
 
 #are people slower for congruent vs. incongruent trials?
-MetaM4<- glmer(congruency~scale(Trial)*log(RT)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
+MetaM4<- glmer(log(RT)~scale(Trial)*as.factor(congruency)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 MetaM4_coef <- summary(MetaM4) 
 
 #does IMS moderate whether people are more likely to respond in a stereotype congruent manner?
@@ -123,7 +128,7 @@ Test2_coef <- summary(Test2)
 MetaM6<- glmer(congruency~scale(Trial)*log(RT)*scale(IMS)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 MetaM6_coef <- summary(MetaM6) 
 
-#does dominance moderate congruent responding?
+#does social dominance predict congruent responding?
 MetaM7<- glmer(congruency~scale(Trial)*scale(SDO)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 MetaM7_coef <- summary(MetaM7) 
 
@@ -132,7 +137,7 @@ MetaM8<- glmer(congruency~scale(Trial)+prob_eff+ as.factor(study)+(scale(Trial)|
 MetaM8_coef <- summary(MetaM8) 
 
 #do people rely more on stereotypes on less predictive trials (abs deviation from .5)?
-MetaM9<- glmer(congruency~scale(Trial)+scale(prob_abs)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
+MetaM9<- glmer(congruency~scale(Trial)*scale(prob_abs)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 MetaM9_coef <- summary(MetaM9) 
 #####
 
@@ -159,21 +164,21 @@ MetaM12_effects <- exp(fixef(MetaM12))
 MetaM12_EMS.CI <- log(exp(confint(MetaM12,'scale(Trial):scale(EMS)', level=0.95)))
 
 #IMS X EMS predicting accuracy
-MetaM12 <- glmer(acc~scale(Trial)*scale(EMS)*scale(IMS)  + as.factor(study)+(Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
-summary(MetaM12)
+MetaM13 <- glmer(acc~scale(Trial)*scale(EMS)*scale(IMS)  + as.factor(study)+(Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
+summary(MetaM13)
 
 
 #intergroup anxiety predicting accuracy
-MetaM13<- glmer(acc~scale(Trial)*scale(intergroup_anx)+as.factor(study)+ (Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
-MetaM13_coef<- summary(MetaM13)
+MetaM14<- glmer(acc~scale(Trial)*scale(intergroup_anx)+as.factor(study)+ (Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
+MetaM14_coef<- summary(MetaM14)
 
 #EMS predicting accuracy in positive stereotype condition
-MetaM14<- glmer(acc~scale(Trial)*scale(EMS)+ (scale(Trial)|Participant)+ (1|Face_Shown), data = TouchdownDF, family = "binomial")
-MetaM14_coef <- summary(MetaM14) #singularity issues with random effect of stimuli, removing converges but does not change estimate
+MetaM15<- glmer(acc~scale(Trial)*scale(EMS)+ (scale(Trial)|Participant)+ (1|Face_Shown), data = TouchdownDF, family = "binomial")
+MetaM15_coef <- summary(MetaM15) #singularity issues with random effect of stimuli, removing converges but does not change estimate
 
 #IMS predicting accuracy in positive stereotype condition
-MetaM15<- glmer(acc~scale(Trial)*scale(IMS)+ (scale(Trial)|Participant)+ (1|Face_Shown), data = TouchdownDF, family = "binomial")
-MetaM15_coef <- summary(MetaM15) #singularity issues with random effect of stimuli, removing converges but does not change estimate
+MetaM16<- glmer(acc~scale(Trial)*scale(IMS)+ (scale(Trial)|Participant)+ (1|Face_Shown), data = TouchdownDF, family = "binomial")
+MetaM16_coef <- summary(MetaM16) #singularity issues with random effect of stimuli, removing converges but does not change estimate
 #####
 
 #Figure 5. Visualize IMS effect. 
