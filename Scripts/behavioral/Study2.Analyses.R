@@ -32,29 +32,42 @@ colnames(contrasts(Study2Data$Condition_dum)) = c("steal", "steal_clouds", "weat
 
 Study2Data$ethnicity_eff <- as.factor(Study2Data$ethnicity)
 contrasts(Study2Data$ethnicity_eff) <- contr.treatment(6)
+
+#recode race per reviewer request
+Study2Data$ethnicity_recode <- Study2Data$ethnicity
+Study2Data$ethnicity_recode <-dplyr::recode_factor(Study2Data$ethnicity_recode, "Black or African American" = "Other", "Native Hawaiian or Pacific Islander" = "Other", "White" = "Other")
+contrasts(Study2Data$ethnicity_recode) <- contr.treatment(3, base = 1) #make other reference group
 #####
 
 #run mixed models for learning by condition
 ######
-Study2.model<- glmer(acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
+Study2.model<- glmer(acc~scale(Trial)+Condition_dum* (scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
 #save(Study2.model, file = "study2model.rda") #function to save model to reload later for simulations
 Study2.coef <- summary(Study2.model) #removing random effect for stimuli removes convergence issue, but does not change estimates and therefore we are keeping it. 
 Study2.effects <- exp(fixef(Study2.model))
 Study2.effects.CI <- log(exp(confint(Study2.model,'Condition_dumsteal', level=0.95)))
+#sensitivity analysis
+model.obser.power <- powerSim(Study2.model, fixed("Condition_dum", "z"), seed = 5, nsim = 800, alpha = .05)
+
+
 #does race moderate learning?
 Study2.race.model<- glmer(acc~scale(Trial)+Condition_dum* ethnicity_eff+(scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
 Study2.race.coef <- summary(Study2.race.model) #no effect of race
+#with race recoded
+Study2.race.model.recoded<- glmer(acc~scale(Trial)+Condition_dum*ethnicity_recode+(scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
+Study2.race.coef <- summary(Study2.race.model.recoded) #still no effect of race
+obser.power <- powerSim(Study2.race.model, compare('~scale(Trial)+Condition_dum* ethnicity_eff+(scale(Trial)|Participant)+(1|Face_Shown)'), alpha = .05)
+
 #Post-hoc simple contrasts
 study2.contr <- emmeans(Study2.model, "Condition_dum")
-study2.contr.coef <- pairs(study2.contr, adjust = "none", type = "response")
+study2.contr.coef <- pairs(study2.contr, adjust = "none")
+study2.contr.eff.size <- pairs(study2.contr, adjust = "none", type = "response")
+
 #compare effect sizes
 #steal compared to steal clouds  0.229% more likely to be incorrect
 #steal compared to weather_faces  0.186% more likely to be incorrect
 #steal compared to weather_faces  0.303% more likely to be incorrect
 
-#apa table
-modelsummary::msummary(list(
-  "Null Model" = Study2.model), stars = T)
 #####
 
 #demonstrating that there are no differences in learning on the first 5 trials
