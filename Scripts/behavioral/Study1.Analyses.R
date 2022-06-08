@@ -21,6 +21,9 @@ Study1.effects.CI <- confint(Study1.model, 'Condition_dumFaces', level=0.95)
 plot_model(Study1.model, type = "pred", terms = c("Trial", "Condition_dum"))
 #####
 
+#simulations for power
+obs.power <- powerSim(Study1.model, fixed("Condition_dum", "z"), seed = 5, nsim = 800, alpha = .05)
+
 #learning early on
 ######
 first_5_df <- Study1Data[-which(Study1Data$Trial>10),]
