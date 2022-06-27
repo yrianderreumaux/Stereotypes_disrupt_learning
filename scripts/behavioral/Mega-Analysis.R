@@ -101,12 +101,14 @@ MetaM1_coef <- summary(MetaM1)
 
 #RT based on stimuli present
 CrimeDF$RT <- as.numeric(CrimeDF$RT)
-MetaM2<- lmer(log(RT)~scale(Trial)*as.factor(Stimuli)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
+MetaM2<- lmer(log(RT)~scale(Trial)+as.factor(Stimuli)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
 MetaM2_coef <- summary(MetaM2)
+plot_model(MetaM2, type = "pred", terms = c("Stimuli"))
 
 #RT for IMS
-MetaM2<- lmer(log(RT)~scale(Trial)*scale(IMS)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
+MetaM2<- lmer(log(RT)~scale(Trial)*scale(IMS)+ scale(EMS)+as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
 MetaM2_coef <- summary(MetaM2)
+tab_model(MetaM2)
 plot_model(MetaM2, type = "pred", terms = c("Trial", "IMS"))
 #are people less accurate on congruent vs. incongruent trials?
 MetaM3<- glmer(acc~scale(Trial)*as.factor(congruency)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
@@ -164,9 +166,9 @@ MetaM12_effects <- exp(fixef(MetaM12))
 MetaM12_EMS.CI <- log(exp(confint(MetaM12,'scale(Trial):scale(EMS)', level=0.95)))
 
 #IMS X EMS predicting accuracy
-MetaM13 <- glmer(acc~scale(Trial)*scale(EMS)*scale(IMS)  + as.factor(study)+(Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
+MetaM13 <- glmer(acc~scale(Trial)*scale(EMS)+scale(Trial)*scale(IMS)  + as.factor(study)+(Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
 summary(MetaM13)
-
+tab_model()
 
 #intergroup anxiety predicting accuracy
 MetaM14<- glmer(acc~scale(Trial)*scale(intergroup_anx)+as.factor(study)+ (Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
