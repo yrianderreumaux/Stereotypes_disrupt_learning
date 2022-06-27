@@ -67,7 +67,7 @@ CrimeDF$opt[CrimeDF$Pattern == 12] <- 0
 CrimeDF$opt[CrimeDF$Pattern == 13] <- .5
 CrimeDF$opt[CrimeDF$Pattern == 14] <- .5
 
-#create congruency variable
+#create stereotypical congruency variables
 CrimeDF$congruency[CrimeDF$Stimuli == "white" & CrimeDF$Choice == "no_steal"] <- 1 #congruent
 CrimeDF$congruency[CrimeDF$Stimuli == "black" & CrimeDF$Choice == "steal"] <- 1 #congruent
 CrimeDF$congruency[CrimeDF$Stimuli == "white" & CrimeDF$Choice == "steal"] <- 0 #incongruent
@@ -79,11 +79,6 @@ TouchdownDF$congruency[TouchdownDF$Stimuli == "black" & TouchdownDF$Choice == "t
 TouchdownDF$congruency[TouchdownDF$Stimuli == "white" & TouchdownDF$Choice == "touchdown"] <- 0
 TouchdownDF$congruency[TouchdownDF$Stimuli == "black" & TouchdownDF$Choice == "no_touchdown"] <- 0
 TouchdownDF$congruency <- as.factor(TouchdownDF$congruency)
-
-#recode race based on reviewer comment
-
-TouchdownDF$ethnicity_cat[TouchdownDF$Stimuli == "white" & TouchdownDF$Choice == "no_touchdown"] <- 1
-
 #####
 
 #effects code card probabilities

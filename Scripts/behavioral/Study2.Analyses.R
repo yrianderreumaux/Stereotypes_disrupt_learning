@@ -44,10 +44,10 @@ contrasts(Study2Data$ethnicity_recode) <- contr.treatment(3, base = 1) #make oth
 Study2.model<- glmer(acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
 #save(Study2.model, file = "study2model.rda") #function to save model to reload later for simulations
 Study2.coef <- summary(Study2.model) #removing random effect for stimuli removes convergence issue, but does not change estimates and therefore we are keeping it. 
-Study2.effects <- exp(fixef(Study2.model))
-Study2.effects.CI <- log(exp(confint(Study2.model,'Condition_dumsteal', level=0.95)))
+Study2.effects <- exp(fixef(Study2.model)) #exponentiate coefficients to get OR
+Study2.effects.CI <- log(exp(confint(Study2.model,'Condition_dumsteal', level=0.95))) #takes some time to calculate CI
 
-#IMS relate to learning in Crime Face or 
+#IMS relate to learning in Crime Face specifically?
 Study2.model<- glmer(acc~scale(Trial)+Condition_dum*scale(IMS)+ (scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data[which(Study2Data$Condition=="steal" | Study2Data$Condition=="weather_faces"),], family = "binomial")
 summary(Study2.model)
 plot_model(Study2.model, type = "pred", terms = c("IMS", "Condition_dum"))
@@ -62,7 +62,7 @@ log(exp(confint(Study2.model222,'Condition_dumweather_faces:scale(IMS)', level=0
 #does race moderate learning?
 Study2.race.model<- glmer(acc~scale(Trial)+Condition_dum* ethnicity_eff+(scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
 Study2.race.coef <- summary(Study2.race.model) #no effect of race
-tab_model(Study2.race.model.recoded)
+tab_model(Study2.race.model)
 
 #with race recoded with 3 instead of 5 factors
 Study2.race.model.recoded<- glmer(acc~scale(Trial)+Condition_dum*ethnicity_recode+(scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
@@ -83,20 +83,24 @@ table(Study2Data$acc[which(Study2Data$Condition=="steal")])
 
 # (0.814 * 0.2340286) /  1 + (0.814 * 0.2340286) - 0.2340286 = 0.14697 = 14.69 % failure rate in Crime Faces compared to 20.34% in Weather Faces
 
-
 #####
 
-######
-first_5_df <- Study2Data[which(Study2Data$Trial<125),]
+#correlations for SOM
+#####
+cor.df <- cor(Study2Data[18:28],  use="complete.obs")
+cor.df.figure <- corrplot(cor.df,  method = 'square', order = 'FPC', type = 'lower', diag = FALSE) 
+ggsave("cor.df.figure", device='jpeg', width = 6, height = 5,dpi=700)
 
-first_5_df.model<- glmer(acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant)+(1|Face_Shown), data = first_5_df, family = "binomial")
-summary(first_5_df.model)
-plot_model(first_5_df.model, type = "pred", terms = c("Trial", "Condition_dum"))
+p1 <- { # Prepare the Corrplot 
+  corrplot(cor.df,  method = 'square', order = 'FPC', type = 'lower', diag = FALSE);
+  # Call the recordPlot() function to record the plot
+  recordPlot()
+}
+ggsave("p1", device='jpeg', width = 6, height = 5,dpi=700), plot = replayPlot(p1)
 
-study2.contr.test <- emmeans(first_5_df.model, "Condition_dum")
-study2.contr.test.coef <- pairs(study2.contr.test, adjust = "none")
-study2.contr.test.size <- pairs(study2.contr.test, adjust = "none", type = "response")
-
+png(file = "correlation_matrix.png")
+corrplot(cor.df,  method = 'square', order = 'FPC', type = 'lower', diag = FALSE) 
+dev.off()
 #####
 
 
