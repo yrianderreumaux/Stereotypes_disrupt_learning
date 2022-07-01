@@ -66,6 +66,13 @@ rope_figure <- plot(percent_rope)
 pd <- p_direction(Bayes_Model)
 #####
 
+#IMS x EMS interaction with condition 
+#####
+mot_val_int<- lmer(acc~scale(Trial)*scale(IMS)*Condition_dum+scale(EMS)+(scale(Trial)|Participant), data = Study3Data)
+summary(mot_val_int)
+plot_model(mot_val_int, type = "pred", terms = c("Trial", "IMS", "Condition_dum"))
+#####
+
 #Figure 4
 ######
 plotcurve4 <- ggplot(Study3Data, aes(Trial, acc, fill = as.factor(Condition))) + 

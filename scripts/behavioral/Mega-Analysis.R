@@ -67,6 +67,16 @@ CrimeDF$opt[CrimeDF$Pattern == 12] <- 0
 CrimeDF$opt[CrimeDF$Pattern == 13] <- .5
 CrimeDF$opt[CrimeDF$Pattern == 14] <- .5
 
+#prototypicality 
+CrimeDF$prototyp[CrimeDF$Face_Shown==1] <- 3.897435897
+CrimeDF$prototyp[CrimeDF$Face_Shown==2] <- 3.70212766
+CrimeDF$prototyp[CrimeDF$Face_Shown==3] <- 3.914893617
+CrimeDF$prototyp[CrimeDF$Face_Shown==4] <- 4.189189189
+CrimeDF$prototyp[CrimeDF$Face_Shown==5] <- 4.14285714
+CrimeDF$prototyp[CrimeDF$Face_Shown==6] <- 4.25
+CrimeDF$prototyp[CrimeDF$Face_Shown==7] <- 3.955555556
+CrimeDF$prototyp[CrimeDF$Face_Shown==8] <- 4.038461538
+
 #create stereotypical congruency variables
 CrimeDF$congruency[CrimeDF$Stimuli == "white" & CrimeDF$Choice == "no_steal"] <- 1 #congruent
 CrimeDF$congruency[CrimeDF$Stimuli == "black" & CrimeDF$Choice == "steal"] <- 1 #congruent
@@ -88,6 +98,12 @@ contrasts(CrimeDF$prob_eff) <- contr.sum(8)
 colnames(contrasts(CrimeDF$prob_eff)) = c(".5", ".55", ".56",".77", "83", "89", "92")
 #####
 
+#make RT numeric
+#####
+CrimeDF$RT <- as.numeric(CrimeDF$RT)
+TouchdownDF$RT <- as.numeric(TouchdownDF$RT)
+#####
+
 #First order models: stereotype application vs. inhibition
 #####
 #effect of stimuli present on each trial
@@ -95,7 +111,6 @@ MetaM1<- glmer(acc~scale(Trial)*as.factor(Stimuli)+ as.factor(study)+(scale(Tria
 MetaM1_coef <- summary(MetaM1) 
 
 #RT based on stimuli present
-CrimeDF$RT <- as.numeric(CrimeDF$RT)
 MetaM2<- lmer(log(RT)~scale(Trial)+as.factor(Stimuli)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
 MetaM2_coef <- summary(MetaM2)
 plot_model(MetaM2, type = "pred", terms = c("Stimuli"))
@@ -151,9 +166,12 @@ MetaM10_IMS.CI <- log(exp(confint(MetaM10,'scale(IMS)', level=0.95)))
 MetaM10_IMS_Trial.CI <- log(exp(confint(MetaM10,'scale(Trial):scale(IMS)', level=0.95)))
 
 #IMS predicting RT
-MetaM11<- lmer(log(RT)~scale(Trial)*scale(IMS)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
+MetaM11<- lmer(log(RT)~scale(Trial)*scale(IMS)+scale(EMS)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
 MetaM11_coef <- summary(MetaM11) 
-
+MetaM11_effects <- exp(fixef(MetaM11))
+MetaM11.CI <- log(exp(confint(MetaM11,'scale(Trial):scale(IMS)', level=0.95)))
+plot_model(MetaM11, type = "pred", terms = c("Trial", "IMS"))
+tab_model(MetaM11)
 #EMS predicting accuracy
 MetaM12 <- glmer(acc~scale(Trial)*scale(EMS) + as.factor(study)+(Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
 MetaM12_coef<- summary(MetaM12) #singularity issue due to random effect of stimuli so dropping it
@@ -161,9 +179,11 @@ MetaM12_effects <- exp(fixef(MetaM12))
 MetaM12_EMS.CI <- log(exp(confint(MetaM12,'scale(Trial):scale(EMS)', level=0.95)))
 
 #IMS X EMS predicting accuracy
-MetaM13 <- glmer(acc~scale(Trial)*scale(EMS)+scale(Trial)*scale(IMS)  + as.factor(study)+(Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
+MetaM13 <- glmer(acc~scale(Trial)*scale(IMS)+scale(EMS)  + as.factor(study)+(Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
 summary(MetaM13)
-tab_model()
+MetaM13_effects <- exp(fixef(MetaM13))
+MetaM13.Main.CI <- log(exp(confint(MetaM13,'scale(IMS)', level=0.95)))
+MetaM13.CI <- log(exp(confint(MetaM13,'scale(Trial):scale(IMS)', level=0.95)))
 
 #intergroup anxiety predicting accuracy
 MetaM14<- glmer(acc~scale(Trial)*scale(intergroup_anx)+as.factor(study)+ (Trial|Participant)+ (1|Face_Shown), data = CrimeDF, family = "binomial")
@@ -176,6 +196,15 @@ MetaM15_coef <- summary(MetaM15) #singularity issues with random effect of stimu
 #IMS predicting accuracy in positive stereotype condition
 MetaM16<- glmer(acc~scale(Trial)*scale(IMS)+ (scale(Trial)|Participant)+ (1|Face_Shown), data = TouchdownDF, family = "binomial")
 MetaM16_coef <- summary(MetaM16) #singularity issues with random effect of stimuli, removing converges but does not change estimate
+
+
+#IMS predicting accuracy in positive stereotype condition
+MetaM17<-  lmer(log(RT)~scale(Trial)*as.factor(Stimuli)+as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
+MetaM17_coef <- summary(MetaM17)
+plot_model(MetaM17, type = "pred", terms = c("Stimuli"))
+MetaM17_effects <- exp(fixef(MetaM17))
+MetaM17.CI <- log(exp(confint(MetaM17,'as.factor(Stimuli)white', level=0.95)))
+tab_model(MetaM17)
 #####
 
 #Figure 5. Visualize IMS effect. 

@@ -6,6 +6,7 @@ Study2Data$Participant <- as.factor(Study2Data$Participant) #make participant fa
 # packrat::init()
 # packrat::snapshot()
 #create variable for face/cloud and prediction type crime/weather
+#####
 Study2Data$stim_type <- NA
 Study2Data$pred_type <- NA
 Study2Data$stim_type[Study2Data$Stimuli=="cloudy" | Study2Data$Stimuli=="sunny"] <- "clouds"
@@ -17,6 +18,9 @@ Study2Data$stim_type <- as.factor(Study2Data$stim_type)
 Study2Data$pred_type <- as.factor(Study2Data$pred_type)
 Study2Data$stim_type <- relevel(Study2Data$stim_type, ref = "clouds")
 Study2Data$pred_type <- relevel(Study2Data$pred_type, ref = "crime")
+
+#####
+
 
 #re-code categorical variables
 #####
@@ -32,11 +36,15 @@ colnames(contrasts(Study2Data$Condition_dum)) = c("steal", "steal_clouds", "weat
 
 Study2Data$ethnicity_eff <- as.factor(Study2Data$ethnicity)
 contrasts(Study2Data$ethnicity_eff) <- contr.treatment(6)
+colnames(contrasts(Study2Data$ethnicity_eff)) = c("Black", "Latinx", "Native Hawaiian or Pacific Islander", "Other", "White")
+
 
 #recode race per reviewer request
 Study2Data$ethnicity_recode <- Study2Data$ethnicity
 Study2Data$ethnicity_recode <-dplyr::recode_factor(Study2Data$ethnicity_recode, "Black or African American" = "Other", "Native Hawaiian or Pacific Islander" = "Other", "White" = "Other")
-contrasts(Study2Data$ethnicity_recode) <- contr.treatment(3, base = 1) #make other reference group
+contrasts(Study2Data$ethnicity_recode) <- contr.treatment(3, base = 1) #make "other" reference group
+colnames(contrasts(Study2Data$ethnicity_recode)) = c("Latinx", "Asian" )
+
 #####
 
 #run mixed models for learning by condition
@@ -73,34 +81,28 @@ tab_model(Study2.race.model.recoded)
 study2.contr <- emmeans(Study2.model, "Condition_dum")
 study2.contr.coef <- pairs(study2.contr, adjust = "none")
 study2.contr.eff.size <- pairs(study2.contr, adjust = "none", type = "response")
-
-#calculate base rate for weather cloud condition
-table(Study2Data$acc[which(Study2Data$Condition=="steal")])
-
-# probability of incorrect in Weather Face = 3970/(15548+3970) = 0.203402
-# probability of incorrect in Crime Face= 4286/(14028+4286) = 0.2340286
-#calculate failure rate (i.e., incorrect prediction) in weather faces relative weather clouds
-
-# (0.814 * 0.2340286) /  1 + (0.814 * 0.2340286) - 0.2340286 = 0.14697 = 14.69 % failure rate in Crime Faces compared to 20.34% in Weather Faces
-
 #####
 
 #correlations for SOM
 #####
-cor.df <- cor(Study2Data[18:28],  use="complete.obs")
-cor.df.figure <- corrplot(cor.df,  method = 'square', order = 'FPC', type = 'lower', diag = FALSE) 
-ggsave("cor.df.figure", device='jpeg', width = 6, height = 5,dpi=700)
+#separate by condition
+subDF <- Study2Data[,c(11,18:28)]
 
-p1 <- { # Prepare the Corrplot 
-  corrplot(cor.df,  method = 'square', order = 'FPC', type = 'lower', diag = FALSE);
+CrimeDF <- subset(subDF, Condition == "steal")
+Crime_cloudsDF <- subset(subDF, Condition == "steal_clouds")
+WeatherDF <- subset(subDF, Condition == "weather")
+Weather_facesDF <- subset(subDF, Condition == "weather_faces")
+
+CrimeDF.cor <- cor(CrimeDF[2:12],  use="complete.obs")
+Crime_cloudsDF.cor <- cor(Crime_cloudsDF[2:12],  use="complete.obs")
+WeatherDF.cor <- cor(WeatherDF[2:12],  use="complete.obs")
+Weather_facesDF.cor <- cor(Weather_facesDF[2:12],  use="complete.obs")
+
+CrimeDF.cor.save <- { # Prepare the Corrplot 
+  corrplot(Weather_facesDF.cor,  method = 'ellipse', type = 'lower', diag = FALSE);
   # Call the recordPlot() function to record the plot
   recordPlot()
 }
-ggsave("p1", device='jpeg', width = 6, height = 5,dpi=700), plot = replayPlot(p1)
-
-png(file = "correlation_matrix.png")
-corrplot(cor.df,  method = 'square', order = 'FPC', type = 'lower', diag = FALSE) 
-dev.off()
 #####
 
 
