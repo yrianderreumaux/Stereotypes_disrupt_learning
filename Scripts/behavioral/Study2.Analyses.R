@@ -2,9 +2,7 @@
 id <- "1hVhWUzRQ--hhPxDhj9rIsvo5-R2wpVHk" # google file ID
 Study2Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
 Study2Data$Participant <- as.factor(Study2Data$Participant) #make participant factor
-# packrat::on()
-# packrat::init()
-# packrat::snapshot()
+
 #create variable for face/cloud and prediction type crime/weather
 #####
 Study2Data$stim_type <- NA
@@ -18,11 +16,9 @@ Study2Data$stim_type <- as.factor(Study2Data$stim_type)
 Study2Data$pred_type <- as.factor(Study2Data$pred_type)
 Study2Data$stim_type <- relevel(Study2Data$stim_type, ref = "clouds")
 Study2Data$pred_type <- relevel(Study2Data$pred_type, ref = "crime")
-
 #####
 
-
-#re-code categorical variables
+#set reference group for categorical variables
 #####
 Study2Data$Condition_eff <- factor(Study2Data$Condition, 
                              levels = c("steal", "steal_clouds", "weather_faces", "weather"))
@@ -38,13 +34,11 @@ Study2Data$ethnicity_eff <- as.factor(Study2Data$ethnicity)
 contrasts(Study2Data$ethnicity_eff) <- contr.treatment(6)
 colnames(contrasts(Study2Data$ethnicity_eff)) = c("Black", "Latinx", "Native Hawaiian or Pacific Islander", "Other", "White")
 
-
-#recode race per reviewer request
+#collapse race per reviewer request
 Study2Data$ethnicity_recode <- Study2Data$ethnicity
 Study2Data$ethnicity_recode <-dplyr::recode_factor(Study2Data$ethnicity_recode, "Black or African American" = "Other", "Native Hawaiian or Pacific Islander" = "Other", "White" = "Other")
 contrasts(Study2Data$ethnicity_recode) <- contr.treatment(3, base = 1) #make "other" reference group
 colnames(contrasts(Study2Data$ethnicity_recode)) = c("Latinx", "Asian" )
-
 #####
 
 #run mixed models for learning by condition
@@ -54,18 +48,6 @@ Study2.model<- glmer(acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant)+
 Study2.coef <- summary(Study2.model) #removing random effect for stimuli removes convergence issue, but does not change estimates and therefore we are keeping it. 
 Study2.effects <- exp(fixef(Study2.model)) #exponentiate coefficients to get OR
 Study2.effects.CI <- log(exp(confint(Study2.model,'Condition_dumsteal', level=0.95))) #takes some time to calculate CI
-
-#IMS relate to learning in Crime Face specifically?
-Study2.model<- glmer(acc~scale(Trial)+Condition_dum*scale(IMS)+ (scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data[which(Study2Data$Condition=="steal" | Study2Data$Condition=="weather_faces"),], family = "binomial")
-summary(Study2.model)
-plot_model(Study2.model, type = "pred", terms = c("IMS", "Condition_dum"))
-ggpredict(Study2.model, c("IMS", "Condition_dum"))%>%plot()+theme_classic()
-
-Study2.model222<- glmer(acc~scale(Trial)+Condition_dum*scale(IMS)+ scale(EMS)+(scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data[which(Study2Data$Condition=="steal" | Study2Data$Condition=="weather_faces"),], family = "binomial")
-summary(Study2.model222)
-ggpredict(Study2.model222, c("Condition_dum", "IMS"))%>%plot()+theme_classic()
-exp(fixef(Study2.model222))
-log(exp(confint(Study2.model222,'Condition_dumweather_faces:scale(IMS)', level=0.95)))
 
 #does race moderate learning?
 Study2.race.model<- glmer(acc~scale(Trial)+Condition_dum* ethnicity_eff+(scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
@@ -81,23 +63,27 @@ tab_model(Study2.race.model.recoded)
 study2.contr <- emmeans(Study2.model, "Condition_dum")
 study2.contr.coef <- pairs(study2.contr, adjust = "none")
 study2.contr.eff.size <- pairs(study2.contr, adjust = "none", type = "response")
+
+#reviewer requested model looking at whether IMS is associated with learning in Crime Face specifically (see Supplemental Figure 4)
+Figure4 <- glmer(acc~scale(Trial)+Condition_dum*scale(IMS)+ (scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data[which(Study2Data$Condition=="steal" | Study2Data$Condition=="weather_faces"),], family = "binomial")
+#ggpredict(Study2.model, c("IMS", "Condition_dum"))%>%plot()+theme_classic()
 #####
 
-#correlations for SOM
+#correlations between all individual differences and accuracy for each condition (for (see Supplemental Figure 1)
 #####
-#separate by condition
+#subset individual differences
 subDF <- Study2Data[,c(11,18:28)]
-
+#separate conditions
 CrimeDF <- subset(subDF, Condition == "steal")
 Crime_cloudsDF <- subset(subDF, Condition == "steal_clouds")
 WeatherDF <- subset(subDF, Condition == "weather")
 Weather_facesDF <- subset(subDF, Condition == "weather_faces")
-
+#run correlations
 CrimeDF.cor <- cor(CrimeDF[2:12],  use="complete.obs")
 Crime_cloudsDF.cor <- cor(Crime_cloudsDF[2:12],  use="complete.obs")
 WeatherDF.cor <- cor(WeatherDF[2:12],  use="complete.obs")
 Weather_facesDF.cor <- cor(Weather_facesDF[2:12],  use="complete.obs")
-
+#generate figures (replace for each condition)
 CrimeDF.cor.save <- { # Prepare the Corrplot 
   corrplot(Weather_facesDF.cor,  method = 'ellipse', type = 'lower', diag = FALSE);
   # Call the recordPlot() function to record the plot
@@ -127,7 +113,7 @@ plotcurve2 <- ggplot(Study2Data, aes(Trial, acc, fill = as.factor(Condition))) +
         panel.background = element_blank(),
         panel.border = element_rect(colour = "black", fill=NA, size=1))+
   coord_cartesian(ylim = c(.6, .9))+theme(axis.ticks=element_blank())
-#ggsave("plotcurve1", device='jpeg', width = 6, height = 5,dpi=700)
+#ggsave("plotcurve2", device='jpeg', width = 6, height = 5,dpi=700)
 #####
 
 #####Print the results in the order they appear in the manuscript

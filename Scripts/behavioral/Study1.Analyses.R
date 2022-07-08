@@ -1,9 +1,9 @@
-#Load data from google drive
+#Load data from public google drive
 id <- "17W8lGp9yJeSCv8bxRLSuy1hlLXQtPv_n" # google file ID
 Study1Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
 Study1Data$Participant <- as.factor(Study1Data$Participant) #make participant factor
 
-##Dummy code condition for accuracy mixed model
+##Dummy code condition for accuracy mixed model (weather faces as reference)
 #####
 Study1Data$Condition_dum <- as.factor(Study1Data$Condition)
 contrasts(Study1Data$Condition_dum) <- contr.treatment(2)
@@ -18,19 +18,12 @@ Study1.coef <- summary(Study1.model)
 Study1.effects <- exp(fixef(Study1.model))
 Study1.effects.CI_trial <- confint(Study1.model, level=0.95)
 Study1.effects.CI <- confint(Study1.model, 'Condition_dumFaces', level=0.95)
-plot_model(Study1.model, type = "pred", terms = c("Trial", "Condition_dum"))
+#plot_model(Study1.model, type = "pred", terms = c("Trial", "Condition_dum"))
 #####
 
 #simulations for power
 obs.power <- powerSim(Study1.model, fixed("Condition_dum", "z"), seed = 5, nsim = 800, alpha = .05)
 
-#learning early on
-######
-first_5_df <- Study1Data[-which(Study1Data$Trial>10),]
-first_5_df.model<- glmer(Acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant)+(1|Face_Shown), data = first_5_df, family = "binomial")
-summary(first_5_df.model)
-plot_model(first_5_df.model, type = "pred", terms = c("Trial", "Condition_dum"))
-#####
 
 #Figure 2 in paper
 #####

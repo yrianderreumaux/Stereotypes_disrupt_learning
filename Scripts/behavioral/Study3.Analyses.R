@@ -1,19 +1,20 @@
-#Load data from google drive
+#Load data from public google drive
 id <- "1cvuW_XxKKBogHrF2bXE8SlUfB1vcvMHy" # google file ID
 Study3Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
 Study3Data$Participant <- as.factor(Study3Data$Participant) #make participant factor
 
-#code categorical variables
+#code categorical variables 
 #####
+#dummy code condition (Crime Face as reference)
 Study3Data$Condition_dum <- as.factor(Study3Data$Condition)
 contrasts(Study3Data$Condition_dum) <- contr.treatment(2)
 colnames(contrasts(Study3Data$Condition_dum)) = c("Touchdown")
-#ethnicity
+#effects code ethnicity
 Study3Data$ethnicity_eff <- as.factor(Study3Data$ethnicity)
 contrasts(Study3Data$ethnicity_eff) <- contr.treatment(5)
 #####
 
-#run mixed models for learning by condition
+#mixed models for learning by condition
 ######
 Study3.model<- glmer(acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant)+(1|Face_Shown), data = Study3Data, family = "binomial")
 Study3.coef <- summary(Study3.model) 
@@ -22,6 +23,7 @@ Study3.effects.CI <- log(exp(confint(Study3.model,'Condition_dumTouchdown', leve
 #does race moderate learning?
 Study3.race.model<- glmer(acc~scale(Trial)*Condition_dum+ ethnicity_eff+(scale(Trial)|Participant)+(1|Face_Shown), data = Study3Data, family = "binomial")
 Study3.race.model.coef <- summary(Study3.race.model)
+##### 
 
 #run as Bayesian model to avoid interpreting null in NHST. Using uninformative priors
 #####
@@ -66,12 +68,6 @@ rope_figure <- plot(percent_rope)
 pd <- p_direction(Bayes_Model)
 #####
 
-#IMS x EMS interaction with condition 
-#####
-mot_val_int<- lmer(acc~scale(Trial)*scale(IMS)*Condition_dum+scale(EMS)+(scale(Trial)|Participant), data = Study3Data)
-summary(mot_val_int)
-plot_model(mot_val_int, type = "pred", terms = c("Trial", "IMS", "Condition_dum"))
-#####
 
 #Figure 4
 ######
