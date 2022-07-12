@@ -4,6 +4,8 @@
 #####
 id <- "1u60kB6co6zekQz7HKo1qh2sHauzhVbis" # google file ID
 CrimeDF <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
+CrimeDF$Participant <- as.factor(CrimeDF$Participant) #make participant factor
+
 #add factor for study covariate
 CrimeDF$study[CrimeDF$Condition=="steal"] <- "two"
 CrimeDF$study[CrimeDF$Condition=="neg"] <- "three"

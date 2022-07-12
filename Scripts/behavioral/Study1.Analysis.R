@@ -3,27 +3,25 @@ id <- "17W8lGp9yJeSCv8bxRLSuy1hlLXQtPv_n" # google file ID
 Study1Data <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
 Study1Data$Participant <- as.factor(Study1Data$Participant) #make participant factor
 
-##Dummy code condition for accuracy mixed model (weather faces as reference)
+##Dummy code condition for accuracy mixed model (weather face as reference)
 #####
-Study1Data$Condition_dum <- as.factor(Study1Data$Condition)
-contrasts(Study1Data$Condition_dum) <- contr.treatment(2)
-colnames(contrasts(Study1Data$Condition_dum)) = c("Faces")
+Study1Data$Condition_dum <- as.factor(Study1Data$Condition)#made factor
+contrasts(Study1Data$Condition_dum) <- contr.treatment(2)#dummy code
+colnames(contrasts(Study1Data$Condition_dum)) = c("Faces")#specify reference group
 #####
 
 #Run mixed model for learning model with random effect of trial within subjects and random intercept for stimuli
 #####
-Study1.model<- glmer(Acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant), data = Study1Data, family = "binomial")
+Study1.model<- glmer(Acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant) +(1 | Stimuli), data = Study1Data, family = "binomial")
 #random effect for face giving rise to singularity issue. Removing it does not change effects
 Study1.coef <- summary(Study1.model)
 Study1.effects <- exp(fixef(Study1.model))
 Study1.effects.CI_trial <- confint(Study1.model, level=0.95)
 Study1.effects.CI <- confint(Study1.model, 'Condition_dumFaces', level=0.95)
-#plot_model(Study1.model, type = "pred", terms = c("Trial", "Condition_dum"))
 #####
 
 #simulations for power
 obs.power <- powerSim(Study1.model, fixed("Condition_dum", "z"), seed = 5, nsim = 800, alpha = .05)
-
 
 #Figure 2 in paper
 #####

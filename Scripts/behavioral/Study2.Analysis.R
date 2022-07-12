@@ -91,7 +91,6 @@ CrimeDF.cor.save <- { # Prepare the Corrplot
 }
 #####
 
-
 ##Figure 3 in manuscript
 ######
 my_colors <- wes_palette("GrandBudapest2")[1:4]
