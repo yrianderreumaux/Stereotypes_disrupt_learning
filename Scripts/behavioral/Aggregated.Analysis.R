@@ -16,6 +16,7 @@ TouchdownDF$Participant <- as.factor(TouchdownDF$Participant) #make participant 
 
 #create categorical card weight and congruency variables
 #####
+#crime condition
 CrimeDF$prob[CrimeDF$Pattern == 1] <- .8947
 CrimeDF$prob[CrimeDF$Pattern == 2] <- .7778
 CrimeDF$prob[CrimeDF$Pattern == 3] <- .9231
@@ -51,23 +52,42 @@ CrimeDF$prob_abs[CrimeDF$Pattern == 12] <- abs((1-.1053)-(.5))
 CrimeDF$prob_abs[CrimeDF$Pattern == 13] <- .5 - .5
 CrimeDF$prob_abs[CrimeDF$Pattern == 14] <- .5 - .5
 
-#create optimal choice variable
-CrimeDF$opt[CrimeDF$Pattern == 1] <- 1
-CrimeDF$opt[CrimeDF$Pattern == 2] <- 1
-CrimeDF$opt[CrimeDF$Pattern == 3] <- 1
-CrimeDF$opt[CrimeDF$Pattern == 5] <- 1
-CrimeDF$opt[CrimeDF$Pattern == 6] <- 1
-CrimeDF$opt[CrimeDF$Pattern == 9] <- 1
 
-CrimeDF$opt[CrimeDF$Pattern == 4 ] <- 0
-CrimeDF$opt[CrimeDF$Pattern == 7] <- 0
-CrimeDF$opt[CrimeDF$Pattern == 8 ] <- 0
-CrimeDF$opt[CrimeDF$Pattern == 10 ] <- 0
-CrimeDF$opt[CrimeDF$Pattern == 11 ] <- 0
-CrimeDF$opt[CrimeDF$Pattern == 12] <- 0
+#Athletic condition
+TouchdownDF$prob[TouchdownDF$Pattern == 1] <- .8947
+TouchdownDF$prob[TouchdownDF$Pattern == 2] <- .7778
+TouchdownDF$prob[TouchdownDF$Pattern == 3] <- .9231
+TouchdownDF$prob[TouchdownDF$Pattern == 5] <- .8333
+TouchdownDF$prob[TouchdownDF$Pattern == 6] <- .8947
+TouchdownDF$prob[TouchdownDF$Pattern == 9] <- .55
 
-CrimeDF$opt[CrimeDF$Pattern == 13] <- .5
-CrimeDF$opt[CrimeDF$Pattern == 14] <- .5
+TouchdownDF$prob[TouchdownDF$Pattern == 4 ] <- 1-.2222
+TouchdownDF$prob[TouchdownDF$Pattern == 7] <- 1-.1053
+TouchdownDF$prob[TouchdownDF$Pattern == 8 ] <- 1-.1667
+TouchdownDF$prob[TouchdownDF$Pattern == 10 ] <- 1-.07
+TouchdownDF$prob[TouchdownDF$Pattern == 11 ] <- 1-.44
+TouchdownDF$prob[TouchdownDF$Pattern == 12] <- 1-.1053
+
+TouchdownDF$prob[TouchdownDF$Pattern == 13] <- .5
+TouchdownDF$prob[TouchdownDF$Pattern == 14] <- .5
+
+#also code as absolute deviation from .5
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 1] <- abs(.8947-.5)
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 2] <- abs(.7778-.5)
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 3] <- abs(.9231-.5)
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 5] <- abs(.8333-.5)
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 6] <- abs(.8947-.5)
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 9] <- abs(.55-.5)
+
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 4 ] <- abs((1-.2222)-(.5))
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 7] <- abs((1-.1053)-(.5))
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 8 ] <- abs((1-.1667)-(.5))
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 10 ] <- abs((1-.07)-(.5))
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 11 ] <- abs((1-.44)-(.5))
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 12] <- abs((1-.1053)-(.5))
+
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 13] <- .5 - .5
+TouchdownDF$prob_abs[TouchdownDF$Pattern == 14] <- .5 - .5
 
 #prototypicality 
 CrimeDF$prototyp[CrimeDF$Face_Shown==1] <- 3.897435897
@@ -98,6 +118,10 @@ TouchdownDF$congruency <- as.factor(TouchdownDF$congruency)
 CrimeDF$prob_eff <- as.factor(CrimeDF$prob)
 contrasts(CrimeDF$prob_eff) <- contr.sum(8)
 colnames(contrasts(CrimeDF$prob_eff)) = c(".5", ".55", ".56",".77", "83", "89", "92")
+
+TouchdownDF$prob_eff <- as.factor(TouchdownDF$prob)
+contrasts(TouchdownDF$prob_eff) <- contr.sum(8)
+colnames(contrasts(TouchdownDF$prob_eff)) = c(".5", ".55", ".56",".77", "83", "89", "92")
 #####
 
 #make reaction time numeric (RT)
@@ -106,19 +130,20 @@ CrimeDF$RT <- as.numeric(CrimeDF$RT)
 TouchdownDF$RT <- as.numeric(TouchdownDF$RT)
 #####
 
-                                         ###########   First order models: stereotype application vs. inhibition  #############
+                                         ###########   First order models in the Crime Face: stereotype application vs. inhibition  #############
 
 #####
 #effect of stimuli present on each trial
 first_order_M1<- glmer(acc~scale(Trial)*as.factor(Stimuli)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 first_order_M1_coef <- summary(first_order_M1) 
+first_order_M1_CI <- log(exp(confint(first_order_M1,'Stimuli', level=0.95)))
 
 #are people less accurate on congruent vs. incongruent trials?
 first_order_M2<- glmer(acc~scale(Trial)*as.factor(congruency)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 first_order_M2_coef <- summary(first_order_M2) 
 
 #are people slower for congruent vs. incongruent trials?
-first_order_M3<- glmer(log(RT)~scale(Trial)*as.factor(congruency)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
+first_order_M3<- lmer(log(RT)~scale(Trial)*as.factor(congruency)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF)
 first_order_M3 <- summary(first_order_M3) 
 
 #do people rely more on stereotypes on less predictive trials?
@@ -130,12 +155,45 @@ first_order_M5<- glmer(congruency~scale(Trial)*scale(prob_abs)+ as.factor(study)
 first_order_M5 <- summary(first_order_M5) 
 
 #does social dominance predict congruent responding?
-first_order_M6<- glmer(congruency~scale(Trial)*scale(SDO)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
+first_order_M6<- glmer(congruency~scale(Trial)*scale(SDO)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant)+ (scale(SDO)|Participant), data = CrimeDF, family = "binomial")
 first_order_M6_coef <- summary(first_order_M6) 
 
 #does IMS moderate whether people are more likely to respond in a stereotype congruent manner?
-first_order_M7<- glmer(congruency~scale(Trial)+scale(IMS)*scale(EMS)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
+first_order_M7<- glmer(congruency~scale(Trial)*scale(IMS)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 first_order_M7_coef <- summary(first_order_M7) 
+#####
+
+                                ###########   First order models in the Athletic condition: stereotype application vs. inhibition  #############
+
+#####
+#note that singular fit warnings are due to low variance within subjects. However, removing this random effect does not change interpretations and therefore is included. 
+#effect of stimuli present on each trial
+first_order_M1_pos<- glmer(acc~scale(Trial)*as.factor(Stimuli)+ (scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = TouchdownDF, family = "binomial")
+first_order_M1_pos_coef <- summary(first_order_M1_pos) 
+
+#are people less accurate on congruent vs. incongruent trials?
+first_order_M2_pos<- glmer(acc~scale(Trial)*as.factor(congruency)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = TouchdownDF, family = "binomial")
+ffirst_order_M2_pos_coef <- summary(first_order_M2_pos) 
+
+#are people slower for congruent vs. incongruent trials?
+first_order_M3_pos<- lmer(log(RT)~scale(Trial)*as.factor(congruency)+ (scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = TouchdownDF)
+first_order_M3_pos_coef <- summary(first_order_M3_pos) 
+
+#do people rely more on stereotypes on less predictive trials?
+first_order_M4_pos<- glmer(congruency~scale(Trial)+prob_eff+ (scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = TouchdownDF, family = "binomial")
+first_order_M4_pos_coef <- summary(first_order_M4_pos) 
+
+#do people rely more on stereotypes on less predictive trials (abs deviation from .5)?
+first_order_M5_pos<- glmer(congruency~scale(Trial)*scale(prob_abs)+ (scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = TouchdownDF, family = "binomial")
+first_order_M5_pos_coef <- summary(first_order_M5_pos) 
+
+#does social dominance predict congruent responding?
+first_order_M6_pos<- glmer(congruency~scale(Trial)*scale(SDO)+ (scale(Trial)|Participant)+(as.factor(Stimuli)|Participant)+ (scale(SDO)|Participant), data = TouchdownDF, family = "binomial")
+first_order_M6_pos_coef <- summary(first_order_M6_pos) 
+
+#does IMS moderate whether people are more likely to respond in a stereotype congruent manner?
+first_order_M7_pos<- glmer(congruency~scale(Trial)*scale(IMS)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = TouchdownDF, family = "binomial")
+first_order_M7_pos_coef <- summary(first_order_M7_pos) 
 #####
 
                                  ###########   Second order models in Crime Face Condition: cumulative effects over time  #############
@@ -158,62 +216,54 @@ second_order_M2_effects <- exp(fixef(second_order_M2))
 second_order_M2.CI <- log(exp(confint(second_order_M2,'scale(Trial):scale(EMS)', level=0.95)))
 
 #Three-way interaction with IMS, EMS and trial
-second_order_M3<- lmer(log(RT)~scale(Trial)*scale(IMS)*scale(EMS)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
+second_order_M3<- glmer(acc~scale(Trial)*scale(IMS)*scale(EMS)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF, family = "binomial")
 second_order_M3_coef <- summary(second_order_M3) 
 second_order_M3_effects <- exp(fixef(second_order_M3))
 second_order_M3.CI <- log(exp(confint(second_order_M3,'scale(Trial):scale(IMS)', level=0.95)))
 
-#RT based on stimuli present
-second_order_M4<- lmer(log(RT)~scale(Trial)+as.factor(Stimuli)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
+#IMS and RT association 
+second_order_M4<- lmer(log(RT)~scale(Trial)*scale(IMS)+ scale(EMS)+as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
 second_order_M4_coef <- summary(second_order_M4)
 second_order_M4_effects <- exp(fixef(second_order_M4))
-second_order_M4.CI <- log(exp(confint(second_order_M4,'', level=0.95)))
-
-#IMS and RT association (only in Supplemental)
-second_order_M5<- lmer(log(RT)~scale(Trial)*scale(IMS)+ scale(EMS)+as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
-second_order_M5_coef <- summary(second_order_M5)
-second_order_M5_effects <- exp(fixef(second_order_M5))
-second_order_M5.CI <- log(exp(confint(second_order_M5,'scale(Trial):scale(IMS)', level=0.95)))
-#####
-
-                            ###########   Second order models in Athletic Condition: cumulative effects over time  #############
-
-
-#EMS predicting accuracy in positive stereotype condition
-#####
-second_order_M1_pos<- glmer(acc~scale(Trial)*scale(IMS)+ (scale(Trial)|Participant)+ (1|Face_Shown), data = TouchdownDF, family = "binomial")
-second_order_M1_pos_coef <- summary(second_order_M1_pos) #singularity issues with random effect of stimuli, removing converges but does not change estimate
-second_order_M1_pos_effects <- exp(fixef(second_order_M1_pos))
-second_order_M1_pos.CI <- log(exp(confint(second_order_M1_pos,'scale(Trial):scale(IMS)', level=0.95)))
-
-#IMS predicting accuracy in positive stereotype condition
-second_order_M2_pos<- glmer(acc~scale(Trial)*scale(EMS)+ (scale(Trial)|Participant)+ (1|Face_Shown), data = TouchdownDF, family = "binomial")
-second_order_M2_pos_coef <- summary(second_order_M2_pos) #singularity issues with random effect of stimuli, removing converges but does not change estimate
-second_order_M2_pos_effects <- exp(fixef(second_order_M2_pos))
-second_order_M2_pos.CI <- log(exp(confint(second_order_M2_pos,'scale(Trial):scale(IMS)', level=0.95)))
-
-#Three-way interaction with IMS, EMS and trial
-second_order_M3_pos<- lmer(log(RT)~scale(Trial)*scale(IMS)*scale(EMS)+ as.factor(study)+(scale(Trial)|Participant), data = TouchdownDF)
-second_order_M3_pos_coef <- summary(second_order_M3_pos) 
-second_order_M3_pos_effects <- exp(fixef(second_order_M3_pos))
-second_order_M3_pos.CI <- log(exp(confint(second_order_M3_pos,'scale(Trial):scale(IMS)', level=0.95)))
+second_order_M4.CI <- log(exp(confint(second_order_M4,'scale(Trial):scale(IMS)', level=0.95)))
 
 #RT based on stimuli present
-second_order_M4_pos<- lmer(log(RT)~scale(Trial)+as.factor(Stimuli)+ as.factor(study)+(scale(Trial)|Participant), data = TouchdownDF)
-second_order_M4_pos_coef <- summary(second_order_M4_pos)
-second_order_M4_pos_effects <- exp(fixef(second_order_M4_pos))
-second_order_M4_pos.CI <- log(exp(confint(second_order_M4_pos,'', level=0.95)))
+second_order_M5<- lmer(log(RT)~scale(Trial)*as.factor(Stimuli)+ as.factor(study)+(scale(Trial)|Participant), data = CrimeDF)
+second_order_M5_coef <- summary(second_order_M5)
+second_order_M5.CI <- log(exp(confint(second_order_M5,'as.factor(Stimuli)white', level=0.95)))
+plot_model(second_order_M5, type = "pred", terms = c("Stimuli"))
+#####
 
-#IMS and RT association
-second_order_M4_pos<- lmer(log(RT)~scale(Trial)*scale(IMS)+ scale(EMS)+as.factor(study)+(scale(Trial)|Participant), data = TouchdownDF)
+                             ###########   Second order models in Athletic Condition: cumulative effects over time  #############
+
+
+#####
+#IMS predicting accuracy in positive stereotype condition 
+second_order_M1_pos<- glmer(acc~scale(Trial)*scale(IMS)+ (scale(Trial)|Participant)+ (1|Face_Shown), data = TouchdownDF, family = "binomial")
+second_order_M1_pos_coef <- summary(second_order_M1_pos) #singularity issues with random effect of stimuli, removing converges but does not change estimate
+
+#EMS predicting accuracy in positive stereotype condition
+second_order_M2_pos<- glmer(acc~scale(Trial)*scale(EMS)+ (scale(Trial)|Participant)+ (1|Face_Shown), data = TouchdownDF, family = "binomial")
+second_order_M2_pos_coef <- summary(second_order_M2_pos) #singularity issues with random effect of stimuli, removing converges but does not change estimate
+
+#Three-way interaction with IMS, EMS and trial
+second_order_M3_pos<- glmer(acc~scale(Trial)*scale(IMS)*scale(EMS)+(scale(Trial)|Participant), data = TouchdownDF, family = "binomial")
+second_order_M3_pos_coef <- summary(second_order_M3_pos) 
+
+#RT based on stimuli present
+second_order_M4_pos<- lmer(log(RT)~scale(Trial)*scale(IMS)+ scale(EMS)+(scale(Trial)|Participant), data = TouchdownDF)
 second_order_M4_pos_coef <- summary(second_order_M4_pos)
-second_order_M4_pos_effects <- exp(fixef(second_order_M4_pos))
-second_order_M4_pos.CI <- log(exp(confint(second_order_M4_pos,'scale(Trial):scale(IMS)', level=0.95)))
+
+#RT based on stimuli present
+second_order_M5_pos<- lmer(log(RT)~scale(Trial)*as.factor(Stimuli)+(scale(Trial)|Participant), data = TouchdownDF)
+second_order_M5_pos_coef <- summary(second_order_M5_pos)
+
+
 #####
 
 #Figure 5. 
 #####
-#median split onyl for figure. Not good practice for analyses. 
+#median split for figure only.
 CrimeDF$IMSDich[CrimeDF$IMS > median(CrimeDF$IMS, na.rm = T) ] <- "high"
 CrimeDF$IMSDich[CrimeDF$IMS < median(CrimeDF$IMS, na.rm = T) ] <- "low"
 plotColorIMS <- wes_palette(n= 2,"GrandBudapest1")
@@ -227,7 +277,7 @@ IMS_plot <- ggplot(meta1IMSPlot, aes(Trial, acc, color = IMSDich)) +
 #ggsave("IMS_plot.png", width = 4, height = 4, dpi = 700)
 #####
 
-print("FIRST ORDER MODELS")
+print("FIRST ORDER MODELS in Crime Face condition")
 
 print("no effect of stimuli on accuracy")
 print(first_order_M1_coef)
@@ -249,6 +299,30 @@ print(first_order_M6_coef)
 
 print("no effect of IMS/EMS on congruent responding")
 print(first_order_M7_coef)
+
+
+print("FIRST ORDER MODELS in Athletic condition")
+
+print("no effect of stimuli on accuracy")
+print(first_order_M1_pos_coef)
+
+print("no effect of congruency on accuracy")
+print(first_order_M2_pos_coef)
+
+print("no effect of congruency on reaction time")
+print(first_order_M3_pos_coef)
+
+print("card pattern weights (categorical) does not predict more stereotype-congruent responding")
+print(first_order_M4_pos_coef)
+
+print("card pattern weights (abs/continous) does not predict more stereotype-congruent responding")
+print(first_order_M5_pos_coef)
+
+print("no effect of SDO on congruent responding")
+print(first_order_M6_pos_coef)
+
+print("no effect of IMS/EMS on congruent responding")
+print(first_order_M7_pos_coef)
 
 
 print("SECOND ORDER MODELS in Crime Face condition")
@@ -282,14 +356,23 @@ print(second_order_M3_effects)
 print("CI for IMS by Trial with EMS")
 print(second_order_M3.CI)
 
-print("M4: RT based on face present")
+print("M4: IMS associated with slower RT")
 
-print("Black faces associated with longer RT over time")
+print("Higher IMS associated with slower RT over time")
 print(second_order_M4_coef)
 print("OR for effect")
 print(second_order_M4_effects)
 print("Ci for effect")
 print(second_order_M4.CI)
+
+print("M5: RT based on face present")
+
+print("Black faces associated with longer RT over time")
+print(second_order_M5_coef)
+print("OR for effect")
+print(second_order_M5_effects)
+print("Ci for effect")
+print(second_order_M5.CI)
 
 print("SECOND ORDER MODELS in Athletic Condition")
 
@@ -302,7 +385,9 @@ print(second_order_M2_pos_coef)
 print("M3: testing three-way interaction with IMS, EMS and trial")
 print(second_order_M3_pos_coef)
 
-print("M4: RT based on face present")
+print("M4: No IMS by RT association")
 print(second_order_M4_pos_coef)
 
+print("M5: no association with RT based on face present")
+print(second_order_M5_pos_coef)
 

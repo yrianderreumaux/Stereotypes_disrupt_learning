@@ -21,8 +21,9 @@ Study3.coef <- summary(Study3.model)
 Study3.effects <- exp(fixef(Study3.model))
 Study3.effects.CI <- log(exp(confint(Study3.model,'Condition_dumTouchdown', level=0.95)))
 #does race moderate learning?
-Study3.race.model<- glmer(acc~scale(Trial)*Condition_dum+ ethnicity_eff+(scale(Trial)|Participant)+(1|Face_Shown), data = Study3Data, family = "binomial")
+Study3.race.model<- glmer(acc~scale(Trial)+Condition_dum*ethnicity_eff+(scale(Trial)|Participant)+(1|Face_Shown), data = Study3Data, family = "binomial")
 Study3.race.model.coef <- summary(Study3.race.model)
+tab_model(Study3.race.model)
 ##### 
 
 #run as Bayesian model to avoid interpreting null in NHST. Using uninformative priors
