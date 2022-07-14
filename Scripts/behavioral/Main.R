@@ -4,6 +4,7 @@
 ###########Remember to set the current directory as working directory before running this code##########
 
 ########Read in packages used for the analyses using groundhog#########
+#install.packages("groundhog") Uncomment to install groundhog
 source('scripts/behavioral/Packages.R')
 
 #######Script for Exclusion Criterion
@@ -24,7 +25,7 @@ source('scripts/behavioral/Study3.Analyses.R')
 #######Analyses for Aggregated Analysis. Warning, this script includes multiple models and CI estimates that take some time to run. 
 source('scripts/behavioral/Aggregated.Analysis.R')
 
-#######Script for Power Analyses
+#######Script for Power Analyses in Study 2
 source('scripts/powersim.R')
 
 

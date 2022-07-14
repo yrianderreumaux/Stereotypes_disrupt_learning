@@ -61,6 +61,11 @@ print("Study 3 Outliers")
 print(study3Outliers)
 
 print("Number of participants exlcuded based on condition across Studies 1-3")
+print("Study 1 by condition")
 print(Study1ExclusByCond)
+
+print("Study 2 by condition")
 print(Study2ExclusByCond)
+
+print("Study 3 by condition")
 print(Study3ExclusByCond)

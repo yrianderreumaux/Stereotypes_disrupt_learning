@@ -44,7 +44,9 @@ colnames(contrasts(Study2Data$ethnicity_recode)) = c("Latinx", "Asian" )
 #run mixed models for learning by condition
 ######
 Study2.model<- glmer(acc~scale(Trial)*Condition_dum+ (scale(Trial)|Participant)+(1|Face_Shown), data = Study2Data, family = "binomial")
-#save(Study2.model, file = "study2model.rda") #function to save model to reload later for simulations
+Study2.modelPOWER<- glmer(acc~scale(Trial)+Condition_dum+ (1|Participant), data = Study2Data, family = "binomial")
+summary(Study2.modelPOWER)
+save(Study2.model, file = "study2model.rda") #function to save model to reload later for simulations
 Study2.coef <- summary(Study2.model) #removing random effect for stimuli removes convergence issue, but does not change estimates and therefore we are keeping it. 
 Study2.effects <- exp(fixef(Study2.model)) #exponentiate coefficients to get OR
 Study2.effects.CI <- log(exp(confint(Study2.model,'Condition_dumsteal', level=0.95))) #takes some time to calculate CI

@@ -1,6 +1,7 @@
 #Load Data study 1
 #####
-Study1IndDiff <- read.csv("data/study1IndDiff.csv", header=T, stringsAsFactors = FALSE, na.strings=c("","NA")) #load data
+id <- "14pDoVVaf9X1wp0gXn7x2kAFPRtRJO7uC" # google file ID
+Study1IndDiff <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id),  header=T, stringsAsFactors = FALSE, na.strings=c("","NA"))
 colnames(Study1IndDiff)[5] <- "participant_strategy"
 #descriptives of individual differences, demographics and number of samples
 Study1.gender.prop<- prop.table(table(Study1IndDiff$Gender))
@@ -10,8 +11,9 @@ Study1.income <- hist(Study1IndDiff$Age)
 
 #Load Study 2
 #####
-Study2IndDiff <- read.csv("data/Study2Data.csv", header=T, stringsAsFactors = FALSE, na.strings=c("","NA")) #load data
-Study2IndDiff <- Study2IndDiff[~duplicated(Study2IndDiff$Participant),] #remove duplicate IDs
+id <- "1hVhWUzRQ--hhPxDhj9rIsvo5-R2wpVHk" # google file ID
+Study2IndDiff <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id))
+Study2IndDiff <- Study2IndDiff[!duplicated(Study2IndDiff$Participant),] #remove duplicate IDs
 Study2.gender.prop <- prop.table(table(Study2IndDiff$gender))
 Study2.ethnicity.prop <- prop.table(table(Study2IndDiff$ethnicity))
 Study2.age <- hist(table(Study2IndDiff$age))
@@ -29,8 +31,8 @@ Study2.intergroup_anx.Omega<- Study2IndDiff$intergroup_anx.Omega
 
 #Load study 3
 #####
-Study3IndDiff <- read.csv("data/Study3Data.csv", header=T, stringsAsFactors = FALSE, na.strings=c("","NA")) #load data
-colnames(Study3IndDiff)
+id <- "1RTDjNCXteFWVrpLVy8pOz5TNSIhHR_KG" # google drive file ID
+Study3IndDiff <- read.csv(sprintf("https://docs.google.com/uc?id=%s&export=download", id),  header=T, stringsAsFactors = FALSE, na.strings=c("","NA"))
 Study3IndDiff <- Study3IndDiff[!duplicated(Study3IndDiff$Participant),] #remove duplicate IDs
 Study3.gender.prop <- prop.table(table(Study3IndDiff$gender))
 Study3.ethnicity.prop <- prop.table(table(Study3IndDiff$ethnicity))
@@ -57,10 +59,12 @@ plot(Study2.IMS)
 plot(Study2.EMS)
 plot(Study2.SDO)
 plot(Study2.EX)
-print(Study2.IMS.Omega)
-print(Study2.EMS.Omega)
-print(Study2.SDO.Omega)
-print(Study2.intergroup_anx.Omega)
+print('IMS Omega')
+print(unique(Study2.IMS.Omega))
+print('EMS Omega')
+print(unique(Study2.EMS.Omega))
+print('SDO Omega')
+print(unique(Study2.SDO.Omega))
 
 print('Descriptives for Study 3')
 print(Study3.gender.prop)
@@ -70,5 +74,4 @@ plot(Study3.IMS)
 plot(Study3.EMS)
 plot(Study3.SDO)
 plot(Study3.EX)
-plot(Study3.intergroup_anx)
 
