@@ -132,8 +132,28 @@ CrimeDF$RT <- as.numeric(CrimeDF$RT)
 TouchdownDF$RT <- as.numeric(TouchdownDF$RT)
 #####
 
-                                         ###########   First order models in the Crime Face: stereotype application vs. inhibition  #############
+#generate correct vs. incorrect prediction
+#####
+CrimeDF$correct[CrimeDF$Pattern == 1] <- "no_steal"
+CrimeDF$correct[CrimeDF$Pattern == 2] <- "no_steal"
+CrimeDF$correct[CrimeDF$Pattern == 3] <- "no_steal"
+CrimeDF$correct[CrimeDF$Pattern == 5] <- "no_steal"
+CrimeDF$correct[CrimeDF$Pattern == 6] <- "no_steal"
+CrimeDF$correct[CrimeDF$Pattern == 9] <- "no_steal"
 
+CrimeDF$correct[CrimeDF$Pattern == 4 ] <- "steal"
+CrimeDF$correct[CrimeDF$Pattern == 7] <- "steal"
+CrimeDF$correct[CrimeDF$Pattern == 8 ] <- "steal"
+CrimeDF$correct[CrimeDF$Pattern == 10 ] <- "steal"
+CrimeDF$correct[CrimeDF$Pattern == 11 ] <- "steal"
+CrimeDF$correct[CrimeDF$Pattern == 12] <- "steal"
+
+CrimeDF$correct[CrimeDF$Pattern == 13] <- NA
+CrimeDF$correct[CrimeDF$Pattern == 14] <- NA
+table(CrimeDF$correct)
+#####  
+
+                               ###########   First order models in the Crime Face: stereotype application vs. inhibition  #############
 #####
 #effect of stimuli present on each trial
 first_order_M1<- glmer(acc~scale(Trial)*as.factor(Stimuli)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
@@ -163,6 +183,21 @@ first_order_M6_coef <- summary(first_order_M6)
 #does IMS moderate whether people are more likely to respond in a stereotype congruent manner?
 first_order_M7<- glmer(congruency~scale(Trial)*scale(IMS)+ as.factor(study)+(scale(Trial)|Participant)+(as.factor(Stimuli)|Participant), data = CrimeDF, family = "binomial")
 first_order_M7_coef <- summary(first_order_M7) 
+
+#does IMS moderate whether people are more likely to respond in a stereotype congruent manner?
+first_order_M8<- glmer(acc~scale(Trial)*Stimuli*correct+study+(scale(Trial)|Participant)+(Stimuli|Participant), data = CrimeDF, family = "binomial")
+first_order_M8_coef <- summary(first_order_M8) 
+first_order_M8_CI <- confint(first_order_M8, method = "Wald")
+
+first_order_M9 <- glmer(acc~scale(Trial)*Stimuli*correct*scale(IMS)+study+(scale(Trial)+correct|Participant)+(Stimuli|Participant), data = CrimeDF, family = "binomial")
+first_order_M9_coef <- summary(first_order_M9) 
+first_order_M9_CI <- confint(first_order_M9, method = "Wald")
+
+
+plot_model(test2, type = "pred", terms = c("Trial", "Stimuli", "correct"))
+
+first_order_M10 <- glmer(acc~scale(Trial)+Stimuli*correct*scale(IMS)+study+(scale(Trial)+correct|Participant)+(Stimuli|Participant), data = CrimeDF, family = "binomial")
+first_order_M10_coef <- summary(first_order_M10) 
 #####
 
                                 ###########   First order models in the Athletic condition: stereotype application vs. inhibition  #############
