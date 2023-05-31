@@ -6,6 +6,6 @@
 
 ### Next, open the [Behavioral analysis](https://github.com/yrianderreumaux/stereotypes_disrupt_learning/tree/main/Scripts/behavioral) scripts in your R environment
 
-### [The behavioral paradigm can be found here](https://github.com/yrianderreumaux/stereotypes_disrupt_learning/tree/main/Scripts/paradigm) require [hddm](https://github.com/hddm-devs/hddm)
+### The behavioral paradigm can be found [here](https://github.com/yrianderreumaux/stereotypes_disrupt_learning/tree/main/Scripts/paradigm) require [hddm](https://github.com/hddm-devs/hddm)
 
 #### If you have any questions or find any bugs, please email yderr001@ucr.edu 
